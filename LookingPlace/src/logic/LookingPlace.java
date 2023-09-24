@@ -3,7 +3,7 @@ package logic;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import userInterface.ChargingScreen;
-import userInterface.Home;
+import userInterface.Main;
 //import userInterface.Home;
 //import userInterface.Home;
 
@@ -26,8 +26,8 @@ public class LookingPlace {
             screen.dispose();
             
             //mando a llamar la nueva ventana
-            Home home = new Home();
-            home.setVisible(true);
+            Main main = new Main();
+            main.setVisible(true);
             
         };
         
