@@ -2,7 +2,9 @@ package userInterface;
 
 import data.RoutingData;
 import data.RoutingService;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,7 +39,15 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         init();
+        setIconImage(getIconImage()); //coloca el icono de la aplicacion 
     }
+    
+    //    icono del jframe
+    @Override
+    public Image getIconImage(){
+        Image retValue = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("src/image/icon.jpeg"));
+        return retValue;
+    } 
 
     private void init() {
         
@@ -163,6 +173,8 @@ public class Main extends javax.swing.JFrame {
         jPopupMenu1.add(menuEnd);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Looking Place");
+        setResizable(false);
 
         jXMapViewer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {

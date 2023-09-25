@@ -10,6 +10,7 @@ public class ChargingScreen extends javax.swing.JFrame {
      * Creates new form ChargingScreen
      */
     public ChargingScreen() {
+        setUndecorated(true); //elimina el borde y la barra del titulo
         initComponents();
         setIconImage(getIconImage());
         
@@ -30,9 +31,9 @@ public class ChargingScreen extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LookingPlace");
         setBackground(new java.awt.Color(255, 255, 51));
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 51));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
