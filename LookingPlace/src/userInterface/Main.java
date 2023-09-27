@@ -26,6 +26,11 @@ import waypoint.MyWaypoint;
 import waypoint.WaypointRender;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Map;
+import org.jpl7.Atom;
+import org.jpl7.Query;
+import org.jpl7.Term;
+import org.jpl7.Variable;
 
 
 
@@ -40,6 +45,7 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         init();
         setIconImage(getIconImage()); //coloca el icono de la aplicacion 
+        lugares();
     }
     
     //    icono del jframe
@@ -155,6 +161,8 @@ public class Main extends javax.swing.JFrame {
         jXMapViewer = new data.JXMapViewerCustom();
         cmdAdd = new javax.swing.JButton();
         cmdClear = new javax.swing.JButton();
+        lugaresInicio = new javax.swing.JComboBox<>();
+        lugaresFin = new javax.swing.JComboBox<>();
 
         menuStart.setText("Start");
         menuStart.addActionListener(new java.awt.event.ActionListener() {
@@ -205,7 +213,11 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(cmdAdd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmdClear)
-                .addContainerGap(951, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(lugaresInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addComponent(lugaresFin, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(555, Short.MAX_VALUE))
         );
         jXMapViewerLayout.setVerticalGroup(
             jXMapViewerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -213,8 +225,10 @@ public class Main extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jXMapViewerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmdAdd)
-                    .addComponent(cmdClear))
-                .addContainerGap(626, Short.MAX_VALUE))
+                    .addComponent(cmdClear)
+                    .addComponent(lugaresInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lugaresFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(624, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -300,12 +314,32 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
+    
+    //funcion que llena los comboBox con los lugares traidos desde Prolog
+    void lugares(){
+//        lugaresInicio.addItem("X");
+        Variable X = new Variable("X");
+        Query q1
+                = new Query(
+                        "lugares",
+                        new Term[]{X}
+                );
+
+        Map<String, Term>[] solutions = q1.allSolutions();
+        for (int i = 0; i < solutions.length; i++) {
+//            System.out.println("X = " + solutions[i].get("X").toString()); 
+            lugaresInicio.addItem(solutions[i].get("X").toString());
+            lugaresFin.addItem(solutions[i].get("X").toString());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdAdd;
     private javax.swing.JButton cmdClear;
     private javax.swing.JPopupMenu jPopupMenu1;
     private data.JXMapViewerCustom jXMapViewer;
+    private javax.swing.JComboBox<String> lugaresFin;
+    private javax.swing.JComboBox<String> lugaresInicio;
     private javax.swing.JMenuItem menuEnd;
     private javax.swing.JMenuItem menuStart;
     // End of variables declaration//GEN-END:variables

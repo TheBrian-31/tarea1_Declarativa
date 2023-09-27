@@ -36,7 +36,28 @@ public class LookingPlace {
         //mando a llamar el hilo de carga de las pantallas
         Thread mHiloCharging = new Thread(mRun);
         mHiloCharging.start();
+        
+        //inicio la conexion con la BC
+        connection();
+        
 
+        
+
+//        //prueba de consulta de contenido a la base de conocimiento
+//        Variable X = new Variable("X");
+//        Query q4
+//                = new Query(
+//                        "descendent_of",
+//                        new Term[]{X, new Atom("joe")}
+//                );
+//
+//        Map<String, Term>[] solutions = q4.allSolutions();
+//        for (int i = 0; i < solutions.length; i++) {
+//            System.out.println("X = " + solutions[i].get("X")); 
+//        }
+    }
+    
+    static void connection(){
         // Prueba de conecion a la base de conocimiento
         Query q1
                 = new Query(
@@ -45,19 +66,6 @@ public class LookingPlace {
                 );
 
         System.out.println("consult " + (q1.hasSolution() ? "succeeded" : "failed"));
-
-        //prueba de consulta de contenido a la base de conocimiento
-        Variable X = new Variable("X");
-        Query q4
-                = new Query(
-                        "descendent_of",
-                        new Term[]{X, new Atom("joe")}
-                );
-
-        Map<String, Term>[] solutions = q4.allSolutions();
-        for (int i = 0; i < solutions.length; i++) {
-            System.out.println("X = " + solutions[i].get("X")); 
-        }
     }
 
 }
