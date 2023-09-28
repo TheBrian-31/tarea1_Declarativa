@@ -321,7 +321,7 @@ public class Main extends javax.swing.JFrame {
         Variable X = new Variable("X");
         Query q1
                 = new Query(
-                        "lugares",
+                        "obtener_nombre_lugar",
                         new Term[]{X}
                 );
 
