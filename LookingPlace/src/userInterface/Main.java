@@ -46,6 +46,8 @@ public class Main extends javax.swing.JFrame {
         init();
         setIconImage(getIconImage()); //coloca el icono de la aplicacion 
         lugares();
+        //mando a llamar la funcion que agrega un waypoint al mapa con coordenadas 13.672436510894373, -89.29708998971142
+        addWaypoint();
     }
     
     //    icono del jframe
@@ -54,6 +56,20 @@ public class Main extends javax.swing.JFrame {
         Image retValue = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("src/image/icon.jpeg"));
         return retValue;
     } 
+
+    //funcion que agrega un waypoint al mapa con coordenadas 13.672436510894373, -89.29708998971142
+    private void addWaypoint() {
+        GeoPosition geop = new GeoPosition(13.672436510894373, -89.29708998971142);
+        MyWaypoint wayPoint = new MyWaypoint("Start Location", event, new GeoPosition(geop.getLatitude(), geop.getLongitude()),"gas");
+        
+        addWaypoint(wayPoint);
+        
+        GeoPosition nuevo = new GeoPosition(13.672313000548774, -89.29440768808627);
+        MyWaypoint puntoNuevo = new MyWaypoint("fin",event, new GeoPosition(nuevo.getLatitude(), nuevo.getLongitude()), "");
+        addWaypoint(puntoNuevo);
+    }
+
+
 
     private void init() {
         
@@ -69,44 +85,47 @@ public class Main extends javax.swing.JFrame {
     jXMapViewer.addMouseListener(mm);
     jXMapViewer.addMouseMotionListener(mm);
 
-    // Agrega el MouseWheelListener personalizado para limitar el zoom máximo a 4
-    jXMapViewer.addMouseWheelListener(new MouseWheelListener() {
-        @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
-            int notches = e.getWheelRotation();
-            int currentZoom = jXMapViewer.getZoom();
-            int newZoom = currentZoom - notches;  // Incrementa o disminuye el nivel de zoom
-
-            // Limita el nivel de zoom máximo a 4
-            if (newZoom > 4) {
-                newZoom = 4;
-            }
-
-            // Actualiza el nivel de zoom del mapa
-            jXMapViewer.setZoom(newZoom);
-        }
-    });
+//    // Agrega el MouseWheelListener personalizado para limitar el zoom máximo a 4
+//    jXMapViewer.addMouseWheelListener(new MouseWheelListener() {
+//        @Override
+//        public void mouseWheelMoved(MouseWheelEvent e) {
+//            int notches = e.getWheelRotation();
+//            int currentZoom = jXMapViewer.getZoom();
+//            int newZoom = currentZoom - notches;  // Incrementa o disminuye el nivel de zoom
+//
+//            // Limita el nivel de zoom máximo a 4
+//            if (newZoom > 4) {
+//                newZoom = 4;
+//            }
+//
+//            // Actualiza el nivel de zoom del mapa
+//            jXMapViewer.setZoom(newZoom);
+//        }
+//    });
 
     event = getEvent();
         
     }
 
     private void addWaypoint(MyWaypoint waypoint) {
+        //remueve todos los puntos 
         for (MyWaypoint d : waypoints) {
             jXMapViewer.remove(d.getButton());
         }
         Iterator<MyWaypoint> iter = waypoints.iterator();
-        while (iter.hasNext()) {
-            if (iter.next().getPointType() == waypoint.getPointType()) {
-                iter.remove();
-            }
-        }
+//        while (iter.hasNext()) {
+//            if (iter.next().getPointType() == waypoint.getPointType()) {
+//                iter.remove();
+//            }
+//        }
         waypoints.add(waypoint);
+//        System.out.println("No pinto el punto");
         initWaypoint();
     }
 
     private void initWaypoint() {
         WaypointPainter<MyWaypoint> wp = new WaypointRender();
+        
         wp.setWaypoints(waypoints);
         jXMapViewer.setOverlayPainter(wp);
         for (MyWaypoint d : waypoints) {
@@ -116,13 +135,13 @@ public class Main extends javax.swing.JFrame {
         if (waypoints.size() == 2) {
             GeoPosition start = null;
             GeoPosition end = null;
-            for (MyWaypoint w : waypoints) {
-                if (w.getPointType() == MyWaypoint.PointType.START) {
-                    start = w.getPosition();
-                } else if (w.getPointType() == MyWaypoint.PointType.END) {
-                    end = w.getPosition();
-                }
-            }
+//            for (MyWaypoint w : waypoints) {
+//                if (w.getPointType() == MyWaypoint.PointType.START) {
+//                    start = w.getPosition();
+//                } else if (w.getPointType() == MyWaypoint.PointType.END) {
+//                    end = w.getPosition();
+//                }
+//            }
             if (start != null && end != null) {
                 routingData = RoutingService.getInstance().routing(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude());
 
@@ -133,14 +152,14 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
-    private void clearWaypoint() {
-        for (MyWaypoint d : waypoints) {
-            jXMapViewer.remove(d.getButton());
-        }
-        routingData.clear();
-        waypoints.clear();
-        initWaypoint();
-    }
+//    private void clearWaypoint() {
+//        for (MyWaypoint d : waypoints) {
+//            jXMapViewer.remove(d.getButton());
+//        }
+//        routingData.clear();
+//        waypoints.clear();
+//        initWaypoint();
+//    }
 
     private EventWaypoint getEvent() {
         return new EventWaypoint() {
@@ -257,18 +276,18 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_cmdAddActionPerformed
 
     private void cmdClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdClearActionPerformed
-        clearWaypoint();
+//        clearWaypoint();
     }//GEN-LAST:event_cmdClearActionPerformed
 
     private void menuStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStartActionPerformed
         GeoPosition geop = jXMapViewer.convertPointToGeoPosition(mousePosition);
-        MyWaypoint wayPoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()));
+        MyWaypoint wayPoint = new MyWaypoint("Start Location", event, new GeoPosition(geop.getLatitude(), geop.getLongitude()),"");
         addWaypoint(wayPoint);
     }//GEN-LAST:event_menuStartActionPerformed
 
     private void menuEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEndActionPerformed
         GeoPosition geop = jXMapViewer.convertPointToGeoPosition(mousePosition);
-        MyWaypoint wayPoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()));
+        MyWaypoint wayPoint = new MyWaypoint("End Location", event, new GeoPosition(geop.getLatitude(), geop.getLongitude()),"");
         addWaypoint(wayPoint);
     }//GEN-LAST:event_menuEndActionPerformed
 
