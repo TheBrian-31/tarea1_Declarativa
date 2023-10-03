@@ -58,6 +58,6 @@ public class MyWaypoint extends DefaultWaypoint {
     }
 
     public static enum PointType {
-        START, END, COORDINATE 
+        START, END, COORDINATE
     }
 }

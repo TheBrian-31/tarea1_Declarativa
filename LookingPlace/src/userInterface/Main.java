@@ -32,12 +32,13 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Variable;
 import waypoint.MyWaypoint;
-
+import logic.PlaceInfoExtractor;
 
 public class Main extends javax.swing.JFrame {
 
     private final Set<MyWaypoint> waypoints = new HashSet<>();
     private List<RoutingData> routingData = new ArrayList<>();
+    private List<RoutingData> allRoutingData = new ArrayList<>();
     private EventWaypoint event;
     private Point mousePosition;
 
@@ -122,11 +123,7 @@ public class Main extends javax.swing.JFrame {
                 if (w.getPointType() == MyWaypoint.PointType.START) {
                     start = w.getPosition();
                     intermediateCoords.add(0, start);
-                } else if (w.getPointType() == MyWaypoint.PointType.COORDINATE) {
-                    intermediateCoords.add(new GeoPosition(13.680828120711915, -89.29266272686563));  // Coordenada intermedia 1 en Santa Tecla
-                    intermediateCoords.add(new GeoPosition(13.6795121373897, -89.27991709943757));  // Coordenada intermedia 2 en Santa Tecla
-                    intermediateCoords.add(new GeoPosition(13.682918080606846, -89.2824372197178));
-                } else if (w.getPointType() == MyWaypoint.PointType.END) {
+                }else if (w.getPointType() == MyWaypoint.PointType.END) {
                     end = w.getPosition();
                     intermediateCoords.add(end);  
                 }
@@ -143,9 +140,13 @@ public class Main extends javax.swing.JFrame {
     }
     //Trazar ruta con N puntos
     private void drawRoutes(List<GeoPosition> coordinatesList) {
-    // Lista para almacenar todas las rutas
-    List<RoutingData> allRoutingData = new ArrayList<>();
-
+    allRoutingData.clear();
+    // Agregar un pin al primer elemento de la lista
+    if (!coordinatesList.isEmpty()) {
+        GeoPosition firstCoordinate = coordinatesList.get(0);
+        MyWaypoint startWaypoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event, firstCoordinate);
+        addWaypoint(startWaypoint);
+    }
     // Itera a través de la lista de coordenadas y realiza el enrutamiento
     for (int i = 0; i < coordinatesList.size() - 1; i++) {
         GeoPosition start = coordinatesList.get(i);
@@ -157,7 +158,12 @@ public class Main extends javax.swing.JFrame {
         // Agrega las rutas a la lista general
         allRoutingData.addAll(routingData);
     }
-
+    // Agregar un pin al último elemento de la lista
+    if (!coordinatesList.isEmpty()) {
+        GeoPosition lastCoordinate = coordinatesList.get(coordinatesList.size() - 1);
+        MyWaypoint endWaypoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event, lastCoordinate);
+        addWaypoint(endWaypoint);
+    }
     // Actualiza el mapa con todas las rutas al mismo tiempo
     jXMapViewer.setRoutingData(allRoutingData);
 }
@@ -166,6 +172,7 @@ public class Main extends javax.swing.JFrame {
         for (MyWaypoint d : waypoints) {
             jXMapViewer.remove(d.getButton());
         }
+        allRoutingData.clear();    
         routingData.clear();
         waypoints.clear();
         initWaypoint();
@@ -231,6 +238,18 @@ public class Main extends javax.swing.JFrame {
         cmdClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdClearActionPerformed(evt);
+            }
+        });
+
+        lugaresInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lugaresInicioActionPerformed(evt);
+            }
+        });
+
+        lugaresFin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lugaresFinActionPerformed(evt);
             }
         });
 
@@ -321,13 +340,31 @@ public class Main extends javax.swing.JFrame {
 
     private void drawLineButtonActionPerformedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawLineButtonActionPerformedActionPerformed
     List<GeoPosition> coordinatesList = new ArrayList<>();
-        coordinatesList.add(new GeoPosition(13.677143598458057, -89.29724958599769));  // Coordenada intermedia 1 en Santa Tecla
-        coordinatesList.add(new GeoPosition(13.674795877694045, -89.28497100806969));  // Coordenada intermedia 2 en Santa Tecla
-        coordinatesList.add(new GeoPosition(13.674633323671475, -89.2789446690997));
-
+    // Obtener el nombre del lugar seleccionado en lugaresInicio
+    String lugarInicio = lugaresInicio.getSelectedItem().toString();
+    // Obtener el nombre del lugar seleccionado en lugaresFin
+    String lugarFin = lugaresFin.getSelectedItem().toString();
+    // Obtener las coordenadas para los lugares seleccionados
+    GeoPosition init = PlaceInfoExtractor.getCoordinates(lugarInicio);
+    GeoPosition fin = PlaceInfoExtractor.getCoordinates(lugarFin);
+    
+    //Coordenada de inicio
+    coordinatesList.add(init);
+    ////Aquí se deben agregar las rutas intermedias
+    //Coordenada de fin
+    coordinatesList.add(fin);
+    
     // Llama a la función para trazar las rutas con la lista de coordenadas
     drawRoutes(coordinatesList);
     }//GEN-LAST:event_drawLineButtonActionPerformedActionPerformed
+
+    private void lugaresInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lugaresInicioActionPerformed
+        String lugarInicio = lugaresInicio.getSelectedItem().toString();
+    }//GEN-LAST:event_lugaresInicioActionPerformed
+
+    private void lugaresFinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lugaresFinActionPerformed
+        String lugarFin = lugaresFin.getSelectedItem().toString();
+    }//GEN-LAST:event_lugaresFinActionPerformed
 
     /**
      * @param args the command line arguments
