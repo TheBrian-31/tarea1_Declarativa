@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 
+import java.util.ArrayList;
+
 public class JXMapViewerCustom extends JXMapViewer {
 
     public List<RoutingData> getRoutingData() {
@@ -60,4 +62,30 @@ public class JXMapViewerCustom extends JXMapViewer {
             }
         });
     }
+    
+         public void drawRoute(List<GeoPosition> routeCoordinates) {
+        if (routeCoordinates == null || routeCoordinates.isEmpty()) {
+            return;
+        }
+
+        Graphics2D g2 = (Graphics2D) getGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Path2D routePath = new Path2D.Double();
+        boolean first = true;
+
+        for (GeoPosition coordinate : routeCoordinates) {
+            Point2D point = convertGeoPositionToPoint(coordinate);
+            if (first) {
+                routePath.moveTo(point.getX(), point.getY());
+                first = false;
+            } else {
+                routePath.lineTo(point.getX(), point.getY());
+            }
+        }
+
+        g2.setColor(new Color(0, 128, 0)); // Color verde para la ruta
+        g2.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.draw(routePath);
+    }
 }
+

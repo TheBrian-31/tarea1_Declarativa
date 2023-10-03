@@ -8,6 +8,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 
 public class MyWaypoint extends DefaultWaypoint {
 
+    
     public PointType getPointType() {
         return pointType;
     }
@@ -57,6 +58,6 @@ public class MyWaypoint extends DefaultWaypoint {
     }
 
     public static enum PointType {
-        START, END
+        START, END, COORDINATE 
     }
 }
