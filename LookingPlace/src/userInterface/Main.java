@@ -351,6 +351,11 @@ public class Main extends javax.swing.JFrame {
     //Coordenada de inicio
     coordinatesList.add(init);
     ////Aquí se deben agregar las rutas intermedias
+    
+    //coordinatesList.add(new GeoPosition(13.672963495146654, -89.28239868905219));
+    //coordinatesList.add(new GeoPosition(13.669643377756415, -89.28255566589242));
+    //coordinatesList.add(new GeoPosition(13.669765876693948, -89.28591543977916));
+    
     //Coordenada de fin
     coordinatesList.add(fin);
     

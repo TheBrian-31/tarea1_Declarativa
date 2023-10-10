@@ -48,9 +48,9 @@ lugar(colegio_SantaInes).
 conecta_con(itca,n2_Calle_Ote).
 conecta_con(n2_Calle_Ote, n9_Avenida_Sur_2-1).
 conecta_con(n9_Avenida_Sur_2-1,n3_avenida_norte_y_8_Calle_te_14).
-conecta_con(n3_avenida_norte_y_8_Calle_te_14,colegio_SantaInes).
+conecta_con(n3_avenida_norte_y_8_Calle_te_14,olegio_SantaInes).
 
-%Ruta de un lugar a otro
+%
 ir_hacia(X, Y, Ruta) :-
     abolish(visitado, 1),
     assert(visitado(X)),
