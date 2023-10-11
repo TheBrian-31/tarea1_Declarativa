@@ -22,16 +22,16 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
 import waypoint.EventWaypoint;
-import waypoint.MyWaypoint;
 import waypoint.WaypointRender;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Map;
-import org.jpl7.Atom;
 import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Variable;
 import waypoint.MyWaypoint;
+import logic.PlaceInfoExtractor;
+import logic.PlaceListLugar;
 import logic.PlaceInfoExtractor;
 
 public class Main extends javax.swing.JFrame {
@@ -339,26 +339,22 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jXMapViewerMouseReleased
 
     private void drawLineButtonActionPerformedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawLineButtonActionPerformedActionPerformed
-    List<GeoPosition> coordinatesList = new ArrayList<>();
+    PlaceListLugar placeListLugar = new PlaceListLugar();  
+    PlaceInfoExtractor placeInfoExtractor= new PlaceInfoExtractor();
     // Obtener el nombre del lugar seleccionado en lugaresInicio
     String lugarInicio = lugaresInicio.getSelectedItem().toString();
     // Obtener el nombre del lugar seleccionado en lugaresFin
     String lugarFin = lugaresFin.getSelectedItem().toString();
-    // Obtener las coordenadas para los lugares seleccionados
-    GeoPosition init = PlaceInfoExtractor.getCoordinates(lugarInicio);
-    GeoPosition fin = PlaceInfoExtractor.getCoordinates(lugarFin);
-    
-    //Coordenada de inicio
-    coordinatesList.add(init);
-    ////Aquí se deben agregar las rutas intermedias
-    
-    coordinatesList.add(new GeoPosition(13.672963495146654, -89.28239868905219));
-    coordinatesList.add(new GeoPosition(13.669643929782355, -89.28256807592008));
-    coordinatesList.add(new GeoPosition(13.669765876693948, -89.28591543977916));
-    
-    //Coordenada de fin
-    coordinatesList.add(fin);
-    
+    //Arreglo de Ruta
+    List <String> rutaLugares = placeListLugar.getRoutes(lugarInicio,lugarFin);
+    List<GeoPosition> coordinatesList = new ArrayList<>();
+    System.out.println("Ruta:" );
+    for (int i = 0; i < rutaLugares.size(); i++) {
+        String lugar = rutaLugares.get(i);
+        System.out.println((i + 1) + ": " + lugar);
+    GeoPosition punto = placeInfoExtractor.getCoordinates(lugar);
+    coordinatesList.add(punto);
+    }
     // Llama a la función para trazar las rutas con la lista de coordenadas
     drawRoutes(coordinatesList);
     }//GEN-LAST:event_drawLineButtonActionPerformedActionPerformed

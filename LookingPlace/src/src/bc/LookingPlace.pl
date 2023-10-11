@@ -35,46 +35,42 @@ coordenadas(la_Skina,13.677817764381556, -89.29755396648788).
 
 %Calles
 coordenadas_lugar(n2_Calle_Ote,13.672963495146654, -89.28239868905219).
-coordenadas_lugar(n9_Avenida_Sur_2-1, 13.669643377756415, -89.28255566589242).
+coordenadas_lugar(n9_Avenida_Sur_2_1, 13.669643377756415, -89.28255566589242).
 coordenadas_lugar(n3_avenida_norte_y_8_Calle_te_14,13.669765876693948, -89.28591543977916).
 coordenadas_lugar(C. Paralela a Sta. Rosa,13.6780985541056, -89.29781395753207).
 
 lugar(itca).
 lugar(n2_Calle_Ote).
-lugar(n9_Avenida_Sur_2-1).
+lugar(n9_Avenida_Sur_2_1).
 lugar(n3_avenida_norte_y_8_Calle_te_14).
 lugar(colegio_SantaInes).
 
 %Relaciones calles
-conecta_con(itca,n2_Calle_Ote).
-conecta_con(n2_Calle_Ote, n9_Avenida_Sur_2-1).
-conecta_con(n9_Avenida_Sur_2-1,n3_avenida_norte_y_8_Calle_te_14).
-conecta_con(n3_avenida_norte_y_8_Calle_te_14,colegio_SantaInes).
+conecta_con(itca, n2_Calle_Ote).
+conecta_con(nuevo1, nuevo2).
+conecta_con(n2_Calle_Ote, n9_Avenida_Sur_2_1).
+conecta_con(n9_Avenida_Sur_2_1, n3_avenida_norte_y_8_Calle_te_14).
+conecta_con(n3_avenida_norte_y_8_Calle_te_14, colegio_SantaInes).
+
 
 %Ruta de un lugar a otro
-ir_hacia(X, Y, Ruta) :-
-    abolish(visitado, 1),
-    assert(visitado(X)),
-    ir_hacia_rec(X, Y, [X], Ruta).
+ir_hacia(X, X, []).
 
-ir_hacia_rec(X, Y, Visitados, Ruta):-
-    conecta_con(X, Y),
-    reverse([Y|Visitados], Ruta).
-
-ir_hacia_rec(X, Y, Visitados, Ruta):-
+ir_hacia(X, Y, [Z | RestoRuta]) :-
     conecta_con(X, Z),
-    not(visitado(Z)),
-    assert(visitado(Z)),
-    ir_hacia_rec(Z, Y, [Z|Visitados], Ruta).
+    ir_hacia(Z, Y, RestoRuta).
 
-ir_hacia_rec(X, Y, Visitados, Ruta):-
-    conecta_con(X, Z),
-    visitado(Z),
-    fail.
+% Predicado para obtener una lista de lugares conectados
+conexiones(LugarInicial, LugarFinal, [LugarInicial | Ruta]) :-
+    ir_hacia(LugarInicial, LugarFinal, Ruta).
+
+conexiones(LugarInicial, LugarFinal, [LugarFinal | Ruta]) :-
+    ir_hacia(LugarFinal, LugarInicial, Ruta).
 
 %regla que asocia los lugares con las coordenadas de ubicacion de estos.
 % Regla para obtener las coordenadas de un lugar dado
-obtener_coordenadas_lugar(Lugar, X, Y) :- coordenadas(Lugar, X, Y).
+obtener_coordenadas_lugar(Lugar, X, Y) :-
+    (coordenadas(Lugar, X, Y); coordenadas_lugar(Lugar, X, Y)).
 
 % Reglas para obtener solo el nombre de los lugares
 obtener_nombre_lugar(Lugar) :- coordenadas(Lugar, _, _).
