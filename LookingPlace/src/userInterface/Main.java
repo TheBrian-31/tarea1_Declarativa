@@ -41,55 +41,86 @@ public class Main extends javax.swing.JFrame {
     private List<RoutingData> allRoutingData = new ArrayList<>();
     private EventWaypoint event;
     private Point mousePosition;
+    private ArrayList<String> nombreLugares = new ArrayList<>();
 
     public Main() {
         initComponents();
         init();
         setIconImage(getIconImage()); //coloca el icono de la aplicacion 
         lugares();
+        addWaypointImage();
+//
+//        //for que recorre todo el array
+//        for (int i = 0; i < nombreLugares.size(); i++) {
+//            System.out.println(nombreLugares.get(i));
+//        }
+
     }
-    
-    //    icono del jframe
+
+    //icono del jframe
     @Override
-    public Image getIconImage(){
+    public Image getIconImage() {
         Image retValue = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("src/image/icon.jpeg"));
         return retValue;
-    } 
+    }
+
+    //funcion para colocar los puntos con sus logos
+    private void addWaypointImage() {
+//        List<GeoPosition> coordinatesList = new ArrayList<>();
+        //bucle que coloca las imagenes de los puntos
+        for (int i = 0; i < nombreLugares.size(); i++) {
+            GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+            MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "gas");
+            pintar(wayPoint);
+        }
+    }
 
     private void init() {
-        
-    TileFactoryInfo info = new VirtualEarthTileFactoryInfo(VirtualEarthTileFactoryInfo.MAP);
-    DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-    jXMapViewer.setTileFactory(tileFactory);
-    GeoPosition geo = new GeoPosition(13.67694, -89.27972);
-    jXMapViewer.setAddressLocation(geo);
-    jXMapViewer.setZoom(4);
 
-    // Create event mouse move
-    MouseInputListener mm = new PanMouseInputListener(jXMapViewer);
-    jXMapViewer.addMouseListener(mm);
-    jXMapViewer.addMouseMotionListener(mm);
+        TileFactoryInfo info = new VirtualEarthTileFactoryInfo(VirtualEarthTileFactoryInfo.MAP);
+        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+        jXMapViewer.setTileFactory(tileFactory);
+        GeoPosition geo = new GeoPosition(13.67694, -89.27972);
+        jXMapViewer.setAddressLocation(geo);
+        jXMapViewer.setZoom(4);
 
-    // Agrega el MouseWheelListener personalizado para limitar el zoom máximo a 4
-    jXMapViewer.addMouseWheelListener(new MouseWheelListener() {
-        @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
-            int notches = e.getWheelRotation();
-            int currentZoom = jXMapViewer.getZoom();
-            int newZoom = currentZoom - notches;  // Incrementa o disminuye el nivel de zoom
+        // Create event mouse move
+        MouseInputListener mm = new PanMouseInputListener(jXMapViewer);
+        jXMapViewer.addMouseListener(mm);
+        jXMapViewer.addMouseMotionListener(mm);
 
-            // Limita el nivel de zoom máximo a 4
-            if (newZoom > 4) {
-                newZoom = 4;
+        // Agrega el MouseWheelListener personalizado para limitar el zoom máximo a 4
+        jXMapViewer.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                int notches = e.getWheelRotation();
+                int currentZoom = jXMapViewer.getZoom();
+                int newZoom = currentZoom - notches;  // Incrementa o disminuye el nivel de zoom
+
+                // Limita el nivel de zoom máximo a 4
+                if (newZoom > 4) {
+                    newZoom = 4;
+                }
+
+                // Actualiza el nivel de zoom del mapa
+                jXMapViewer.setZoom(newZoom);
             }
+        });
 
-            // Actualiza el nivel de zoom del mapa
-            jXMapViewer.setZoom(newZoom);
+        event = getEvent();
+
+    }
+    
+    //funcion que es una copia de la funcion addWaypoint con la modificacion que
+    //permite pintar los puntos de los lugares
+    private void pintar (MyWaypoint waypoint){
+        for (MyWaypoint d : waypoints) {
+            jXMapViewer.remove(d.getButton());
         }
-    });
+//        Iterator<MyWaypoint> iter = waypoints.iterator();
 
-    event = getEvent();
-        
+        waypoints.add(waypoint);
+        iniciarPunto();
     }
 
     private void addWaypoint(MyWaypoint waypoint) {
@@ -104,6 +135,17 @@ public class Main extends javax.swing.JFrame {
         }
         waypoints.add(waypoint);
         initWaypoint();
+    }
+    
+    //copia de la funcion initWaypoint pero que solo se utiliza para pintar los puntos del mapa para el logo
+    private void iniciarPunto(){
+        WaypointPainter<MyWaypoint> wp = new WaypointRender();
+        wp.setWaypoints(waypoints);
+        jXMapViewer.setOverlayPainter(wp);
+        for (MyWaypoint d : waypoints) {
+            jXMapViewer.add(d.getButton());
+        }
+
     }
 
     private void initWaypoint() {
@@ -123,9 +165,9 @@ public class Main extends javax.swing.JFrame {
                 if (w.getPointType() == MyWaypoint.PointType.START) {
                     start = w.getPosition();
                     intermediateCoords.add(0, start);
-                }else if (w.getPointType() == MyWaypoint.PointType.END) {
+                } else if (w.getPointType() == MyWaypoint.PointType.END) {
                     end = w.getPosition();
-                    intermediateCoords.add(end);  
+                    intermediateCoords.add(end);
                 }
             }
 
@@ -138,41 +180,42 @@ public class Main extends javax.swing.JFrame {
             jXMapViewer.setRoutingData(routingData);
         }
     }
+
     //Trazar ruta con N puntos
     private void drawRoutes(List<GeoPosition> coordinatesList) {
-    allRoutingData.clear();
-    // Agregar un pin al primer elemento de la lista
-    if (!coordinatesList.isEmpty()) {
-        GeoPosition firstCoordinate = coordinatesList.get(0);
-        MyWaypoint startWaypoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event, firstCoordinate);
-        addWaypoint(startWaypoint);
-    }
-    // Itera a través de la lista de coordenadas y realiza el enrutamiento
-    for (int i = 0; i < coordinatesList.size() - 1; i++) {
-        GeoPosition start = coordinatesList.get(i);
-        GeoPosition end = coordinatesList.get(i + 1);
+        allRoutingData.clear();
+        // Agregar un pin al primer elemento de la lista
+        if (!coordinatesList.isEmpty()) {
+            GeoPosition firstCoordinate = coordinatesList.get(0);
+            MyWaypoint startWaypoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event, firstCoordinate, "");
+            addWaypoint(startWaypoint);
+        }
+        // Itera a través de la lista de coordenadas y realiza el enrutamiento
+        for (int i = 0; i < coordinatesList.size() - 1; i++) {
+            GeoPosition start = coordinatesList.get(i);
+            GeoPosition end = coordinatesList.get(i + 1);
 
-        // Realiza el enrutamiento y obtén la lista de RoutingData
-        List<RoutingData> routingData = RoutingService.getInstance().routing(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude());
+            // Realiza el enrutamiento y obtén la lista de RoutingData
+            List<RoutingData> routingData = RoutingService.getInstance().routing(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude());
 
-        // Agrega las rutas a la lista general
-        allRoutingData.addAll(routingData);
+            // Agrega las rutas a la lista general
+            allRoutingData.addAll(routingData);
+        }
+        // Agregar un pin al último elemento de la lista
+        if (!coordinatesList.isEmpty()) {
+            GeoPosition lastCoordinate = coordinatesList.get(coordinatesList.size() - 1);
+            MyWaypoint endWaypoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event, lastCoordinate, "");
+            addWaypoint(endWaypoint);
+        }
+        // Actualiza el mapa con todas las rutas al mismo tiempo
+        jXMapViewer.setRoutingData(allRoutingData);
     }
-    // Agregar un pin al último elemento de la lista
-    if (!coordinatesList.isEmpty()) {
-        GeoPosition lastCoordinate = coordinatesList.get(coordinatesList.size() - 1);
-        MyWaypoint endWaypoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event, lastCoordinate);
-        addWaypoint(endWaypoint);
-    }
-    // Actualiza el mapa con todas las rutas al mismo tiempo
-    jXMapViewer.setRoutingData(allRoutingData);
-}
 
     private void clearWaypoint() {
         for (MyWaypoint d : waypoints) {
             jXMapViewer.remove(d.getButton());
         }
-        allRoutingData.clear();    
+        allRoutingData.clear();
         routingData.clear();
         waypoints.clear();
         initWaypoint();
@@ -321,13 +364,13 @@ public class Main extends javax.swing.JFrame {
 
     private void menuStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStartActionPerformed
         GeoPosition geop = jXMapViewer.convertPointToGeoPosition(mousePosition);
-        MyWaypoint wayPoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()));
+        MyWaypoint wayPoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "");
         addWaypoint(wayPoint);
     }//GEN-LAST:event_menuStartActionPerformed
 
     private void menuEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEndActionPerformed
         GeoPosition geop = jXMapViewer.convertPointToGeoPosition(mousePosition);
-        MyWaypoint wayPoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()));
+        MyWaypoint wayPoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "");
         addWaypoint(wayPoint);
     }//GEN-LAST:event_menuEndActionPerformed
 
@@ -339,28 +382,28 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jXMapViewerMouseReleased
 
     private void drawLineButtonActionPerformedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawLineButtonActionPerformedActionPerformed
-    List<GeoPosition> coordinatesList = new ArrayList<>();
-    // Obtener el nombre del lugar seleccionado en lugaresInicio
-    String lugarInicio = lugaresInicio.getSelectedItem().toString();
-    // Obtener el nombre del lugar seleccionado en lugaresFin
-    String lugarFin = lugaresFin.getSelectedItem().toString();
-    // Obtener las coordenadas para los lugares seleccionados
-    GeoPosition init = PlaceInfoExtractor.getCoordinates(lugarInicio);
-    GeoPosition fin = PlaceInfoExtractor.getCoordinates(lugarFin);
-    
-    //Coordenada de inicio
-    coordinatesList.add(init);
-    ////Aquí se deben agregar las rutas intermedias
-    
-    coordinatesList.add(new GeoPosition(13.672963495146654, -89.28239868905219));
-    coordinatesList.add(new GeoPosition(13.669643929782355, -89.28256807592008));
-    coordinatesList.add(new GeoPosition(13.669765876693948, -89.28591543977916));
-    
-    //Coordenada de fin
-    coordinatesList.add(fin);
-    
-    // Llama a la función para trazar las rutas con la lista de coordenadas
-    drawRoutes(coordinatesList);
+        List<GeoPosition> coordinatesList = new ArrayList<>();
+        // Obtener el nombre del lugar seleccionado en lugaresInicio
+        String lugarInicio = lugaresInicio.getSelectedItem().toString();
+        // Obtener el nombre del lugar seleccionado en lugaresFin
+        String lugarFin = lugaresFin.getSelectedItem().toString();
+        // Obtener las coordenadas para los lugares seleccionados
+        GeoPosition init = PlaceInfoExtractor.getCoordinates(lugarInicio);
+        GeoPosition fin = PlaceInfoExtractor.getCoordinates(lugarFin);
+
+        //Coordenada de inicio
+        coordinatesList.add(init);
+        ////Aquí se deben agregar las rutas intermedias
+
+        coordinatesList.add(new GeoPosition(13.672963495146654, -89.28239868905219));
+        coordinatesList.add(new GeoPosition(13.669643929782355, -89.28256807592008));
+        coordinatesList.add(new GeoPosition(13.669765876693948, -89.28591543977916));
+
+        //Coordenada de fin
+        coordinatesList.add(fin);
+
+        // Llama a la función para trazar las rutas con la lista de coordenadas
+        drawRoutes(coordinatesList);
     }//GEN-LAST:event_drawLineButtonActionPerformedActionPerformed
 
     private void lugaresInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lugaresInicioActionPerformed
@@ -398,7 +441,6 @@ public class Main extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -406,9 +448,9 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
-    
+
     //funcion que llena los comboBox con los lugares traidos desde Prolog
-    void lugares(){
+    private void lugares() {
 //        lugaresInicio.addItem("X");
         Variable X = new Variable("X");
         Query q1
@@ -422,6 +464,8 @@ public class Main extends javax.swing.JFrame {
 //            System.out.println("X = " + solutions[i].get("X").toString()); 
             lugaresInicio.addItem(solutions[i].get("X").toString());
             lugaresFin.addItem(solutions[i].get("X").toString());
+            nombreLugares.add(solutions[i].get("X").toString());
+
         }
     }
 
