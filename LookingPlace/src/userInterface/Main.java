@@ -47,7 +47,7 @@ public class Main extends javax.swing.JFrame {
         setIconImage(getIconImage()); //coloca el icono de la aplicacion 
         lugares();
         //mando a llamar la funcion que agrega un waypoint al mapa con coordenadas 13.672436510894373, -89.29708998971142
-        addWaypoint();
+        addWaypointImage();
     }
     
     //    icono del jframe
@@ -58,7 +58,7 @@ public class Main extends javax.swing.JFrame {
     } 
 
     //funcion que agrega un waypoint al mapa con coordenadas 13.672436510894373, -89.29708998971142
-    private void addWaypoint() {
+    private void addWaypointImage() {
         GeoPosition geop = new GeoPosition(13.672436510894373, -89.29708998971142);
         MyWaypoint wayPoint = new MyWaypoint("Start Location", event, new GeoPosition(geop.getLatitude(), geop.getLongitude()),"gas");
         
@@ -152,14 +152,15 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
-//    private void clearWaypoint() {
-//        for (MyWaypoint d : waypoints) {
-//            jXMapViewer.remove(d.getButton());
-//        }
-//        routingData.clear();
-//        waypoints.clear();
-//        initWaypoint();
-//    }
+    private void clearWaypoint() {
+        for (MyWaypoint d : waypoints) {
+            jXMapViewer.remove(d.getButton());
+        }
+        routingData.clear();
+        waypoints.clear();
+        initWaypoint();
+        addWaypointImage();
+    }
 
     private EventWaypoint getEvent() {
         return new EventWaypoint() {
@@ -276,7 +277,7 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_cmdAddActionPerformed
 
     private void cmdClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdClearActionPerformed
-//        clearWaypoint();
+        clearWaypoint();
     }//GEN-LAST:event_cmdClearActionPerformed
 
     private void menuStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStartActionPerformed
@@ -335,7 +336,7 @@ public class Main extends javax.swing.JFrame {
     }
     
     //funcion que llena los comboBox con los lugares traidos desde Prolog
-    void lugares(){
+    private void lugares(){
 //        lugaresInicio.addItem("X");
         Variable X = new Variable("X");
         Query q1
@@ -346,7 +347,7 @@ public class Main extends javax.swing.JFrame {
 
         Map<String, Term>[] solutions = q1.allSolutions();
         for (int i = 0; i < solutions.length; i++) {
-//            System.out.println("X = " + solutions[i].get("X").toString()); 
+            System.out.println("X = " + solutions[i].get("X").toString()); 
             lugaresInicio.addItem(solutions[i].get("X").toString());
             lugaresFin.addItem(solutions[i].get("X").toString());
         }
