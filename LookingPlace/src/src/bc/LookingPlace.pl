@@ -37,6 +37,7 @@ coordenadas(la_Skina,13.677817764381556, -89.29755396648788).
 coordenadas_lugar(n2_Calle_Ote,13.672963495146654, -89.28239868905219).
 coordenadas_lugar(n9_Avenida_Sur_2-1, 13.669643377756415, -89.28255566589242).
 coordenadas_lugar(n3_avenida_norte_y_8_Calle_te_14,13.669765876693948, -89.28591543977916).
+coordenadas_lugar(C. Paralela a Sta. Rosa,13.6780985541056, -89.29781395753207).
 
 lugar(itca).
 lugar(n2_Calle_Ote).
