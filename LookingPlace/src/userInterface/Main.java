@@ -69,9 +69,32 @@ public class Main extends javax.swing.JFrame {
 //        List<GeoPosition> coordinatesList = new ArrayList<>();
         //bucle que coloca las imagenes de los puntos
         for (int i = 0; i < nombreLugares.size(); i++) {
-            GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
-            MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "gas");
-            pintar(wayPoint);
+
+            if (i <= 4) {
+                GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+                MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "gas");
+                pintar(wayPoint);
+            } else if (i <= 9) {
+                GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+                MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "escuela");
+                pintar(wayPoint);
+            } else if (i<=14) {
+                GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+                MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "salud");
+                pintar(wayPoint);
+            }else if (i<=19) {
+                GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+                MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "parque");
+                pintar(wayPoint);
+            }else{
+                GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+                MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "ccomercial");
+                pintar(wayPoint);
+            }
+
+            //GeoPosition geop = PlaceInfoExtractor.getCoordinates(nombreLugares.get(i));
+            //MyWaypoint wayPoint = new MyWaypoint(nombreLugares.get(i), MyWaypoint.PointType.COORDINATE, event, new GeoPosition(geop.getLatitude(), geop.getLongitude()), "gas");
+            //pintar(wayPoint);
         }
     }
 
@@ -110,10 +133,10 @@ public class Main extends javax.swing.JFrame {
         event = getEvent();
 
     }
-    
+
     //funcion que es una copia de la funcion addWaypoint con la modificacion que
     //permite pintar los puntos de los lugares
-    private void pintar (MyWaypoint waypoint){
+    private void pintar(MyWaypoint waypoint) {
         for (MyWaypoint d : waypoints) {
             jXMapViewer.remove(d.getButton());
         }
@@ -136,9 +159,9 @@ public class Main extends javax.swing.JFrame {
         waypoints.add(waypoint);
         initWaypoint();
     }
-    
+
     //copia de la funcion initWaypoint pero que solo se utiliza para pintar los puntos del mapa para el logo
-    private void iniciarPunto(){
+    private void iniciarPunto() {
         WaypointPainter<MyWaypoint> wp = new WaypointRender();
         wp.setWaypoints(waypoints);
         jXMapViewer.setOverlayPainter(wp);
