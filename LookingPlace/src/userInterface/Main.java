@@ -231,6 +231,7 @@ public class Main extends javax.swing.JFrame {
         routingData.clear();
         waypoints.clear();
         initWaypoint();
+        addWaypointImage();
     }
 
     private EventWaypoint getEvent() {
