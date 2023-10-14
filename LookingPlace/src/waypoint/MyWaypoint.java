@@ -8,6 +8,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 
 public class MyWaypoint extends DefaultWaypoint {
 
+    
     public PointType getPointType() {
         return pointType;
     }
@@ -32,11 +33,11 @@ public class MyWaypoint extends DefaultWaypoint {
         this.button = button;
     }
 
-    public MyWaypoint(String name, PointType pointType, EventWaypoint event, GeoPosition coord) {
+    public MyWaypoint(String name, PointType pointType, EventWaypoint event, GeoPosition coord, String lugar) {
         super(coord);
         this.name = name;
         this.pointType = pointType;
-        initButton(event);
+        initButton(event, lugar);
     }
 
     public MyWaypoint() {
@@ -46,8 +47,8 @@ public class MyWaypoint extends DefaultWaypoint {
     private JButton button;
     private PointType pointType;
 
-    private void initButton(EventWaypoint event) {
-        button = new ButtonWaypoint();
+    private void initButton(EventWaypoint event,String lugar) {
+        button = new ButtonWaypoint(lugar);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -57,6 +58,6 @@ public class MyWaypoint extends DefaultWaypoint {
     }
 
     public static enum PointType {
-        START, END
+        START, END, COORDINATE
     }
 }
