@@ -188,6 +188,13 @@ lugar(salida_avenida_balden).
 %Relaciones
 
 % UNO A TODOS LOS PUNTOS 
+
+% Ruta correcta
+conecta_con(uno,carr_Panamericana_1).
+conecta_con(carr_Panamericana_1, carr_Panamericana_2).
+conecta_con(carr_Panamericana_2, texaco).
+% Ruta correcta
+
 conecta_con(uno, la_Skina).
 conecta_con(uno, cafetalon).
 
@@ -223,10 +230,6 @@ conecta_con(uno, dlc).
 conecta_con(uno, texacoSERVITEX).
 
 conecta_con(uno, pumaEnergy).
-conecta_con(uno, texaco).
-
-
-
 
 % TEXACO A TODOS LOS PUNTOS 
 conecta_con(texaco, la_Skina).
@@ -389,11 +392,15 @@ conecta_con(itca, parque_SanMartin).
 conecta_con(itca, parque_LaFamilia).
 conecta_con(itca, parque_ElEspino).
 
+% Ruta correcta
+conecta_con(itca, n2_Calle_Ote).
+conecta_con(nuevo1, nuevo2).
+conecta_con(n2_Calle_Ote, n9_Avenida_Sur_2_1).
+conecta_con(n9_Avenida_Sur_2_1, n3_avenida_norte_y_8_Calle_te_14).
+conecta_con(n3_avenida_norte_y_8_Calle_te_14, colegio_SantaInes).
+% Ruta correcta
 
 conecta_con(itca, hospital_SanRafael).
-
-
-conecta_con(itca, colegio_SantaInes).
 conecta_con(itca, jose_damian_villacorta).
 conecta_con(itca, colegio_Fatima).
 conecta_con(itca, jose_damian_villacorta).
@@ -402,8 +409,6 @@ conecta_con(itca, colegio_Champagnat).
 conecta_con(itca, centroComercial_SantaRosa).
 
 conecta_con(itca, parque_DanielaHernandez).
-
-
 
 
 % HOSPITAL SAN RAFAEL A TODOS LOS PUNTOS
@@ -674,19 +679,25 @@ conecta_con(plaza_Merliot, plaza_ElCarmen).
 conecta_con(plaza_ElCarmen, la_Skina).
 
 
-%Ruta de un lugar a otro
-ir_hacia(X, X, []).
+ir_hacia(X, Y, Ruta) :-
+    assert(visitado(X)),
+    ir_hacia_rec(X, Y, [X], Ruta),
+    retractall(visitado(_)).
 
-ir_hacia(X, Y, [Z | RestoRuta]) :-
+ir_hacia_rec(X, Y, Acumulador, Ruta) :-
+    conecta_con(X, Y),
+    reverse([Y|Acumulador], Ruta),
+    !.
+
+ir_hacia_rec(X, Y, Acumulador, Ruta) :-
     conecta_con(X, Z),
-    ir_hacia(Z, Y, RestoRuta).
+    not(visitado(Z)),
+    assert(visitado(Z)),
+    ir_hacia_rec(Z, Y, [Z|Acumulador], Ruta).
 
-% Predicado para obtener una lista de lugares conectados
-conexiones(LugarInicial, LugarFinal, [LugarInicial | Ruta]) :-
-    ir_hacia(LugarInicial, LugarFinal, Ruta).
-
-conexiones(LugarInicial, LugarFinal, [LugarFinal | Ruta]) :-
-    ir_hacia(LugarFinal, LugarInicial, Ruta).
+% Predicado para obtener una lista de lugares conectados entre dos puntos
+conexiones(LugarInicial, LugarFinal, Ruta) :-
+    (ir_hacia(LugarInicial, LugarFinal, Ruta) ; ir_hacia(LugarFinal, LugarInicial, Ruta)).
 
 %regla que asocia los lugares con las coordenadas de ubicacion de estos.
 % Regla para obtener las coordenadas de un lugar dado
@@ -695,13 +706,3 @@ obtener_coordenadas_lugar(Lugar, X, Y) :-
 
 % Reglas para obtener solo el nombre de los lugares
 obtener_nombre_lugar(Lugar) :- coordenadas(Lugar, _, _).
-
-
-
-
-
-
-
-
-
-
