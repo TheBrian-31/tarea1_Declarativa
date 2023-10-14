@@ -33,12 +33,14 @@ import waypoint.MyWaypoint;
 import logic.PlaceInfoExtractor;
 import logic.PlaceListLugar;
 import logic.PlaceInfoExtractor;
+import javax.swing.DefaultListModel;
 
 public class Main extends javax.swing.JFrame {
 
     private final Set<MyWaypoint> waypoints = new HashSet<>();
     private List<RoutingData> routingData = new ArrayList<>();
     private List<RoutingData> allRoutingData = new ArrayList<>();
+    private DefaultListModel<String> listModel = new DefaultListModel<>();
     private EventWaypoint event;
     private Point mousePosition;
     private ArrayList<String> nombreLugares = new ArrayList<>();
@@ -227,11 +229,16 @@ public class Main extends javax.swing.JFrame {
         for (MyWaypoint d : waypoints) {
             jXMapViewer.remove(d.getButton());
         }
-        allRoutingData.clear();
-        routingData.clear();
-        waypoints.clear();
-        initWaypoint();
-        addWaypointImage();
+    listModel.clear(); // Limpia la lista antes de agregar nuevos valores.
+        String[] valoresPorDefecto = { "Ruta..." };
+        for (String valor : valoresPorDefecto) {
+        listModel.addElement(valor);
+        }
+    allRoutingData.clear();    
+    routingData.clear();
+    waypoints.clear();
+    initWaypoint();
+    addWaypointImage();
     }
 
     private EventWaypoint getEvent() {
@@ -259,6 +266,8 @@ public class Main extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        rutaList = new javax.swing.JList<>();
 
         menuStart.setText("Start");
         menuStart.addActionListener(new java.awt.event.ActionListener() {
@@ -328,7 +337,6 @@ public class Main extends javax.swing.JFrame {
         jTextField1.setEditable(false);
         jTextField1.setBackground(new java.awt.Color(255, 204, 0));
         jTextField1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(0, 0, 0));
         jTextField1.setText("Lugar de Llegada");
         jTextField1.setBorder(null);
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
@@ -341,28 +349,39 @@ public class Main extends javax.swing.JFrame {
         jTextField2.setEditable(false);
         jTextField2.setBackground(new java.awt.Color(255, 204, 0));
         jTextField2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jTextField2.setForeground(new java.awt.Color(0, 0, 0));
         jTextField2.setText("Lugar de Inicio");
         jTextField2.setBorder(null);
         jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, -1, -1));
 
         jLabel1.setBackground(new java.awt.Color(255, 204, 0));
         jLabel1.setFont(new java.awt.Font("Arial Black", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Looking Place");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 10, -1, -1));
+
+        rutaList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Ruta..." };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(rutaList);
 
         javax.swing.GroupLayout jXMapViewerLayout = new javax.swing.GroupLayout(jXMapViewer);
         jXMapViewer.setLayout(jXMapViewerLayout);
         jXMapViewerLayout.setHorizontalGroup(
             jXMapViewerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1305, Short.MAX_VALUE)
+            .addGroup(jXMapViewerLayout.createSequentialGroup()
+                .addGap(74, 74, 74)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jXMapViewerLayout.setVerticalGroup(
             jXMapViewerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jXMapViewerLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 600, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 492, Short.MAX_VALUE))
         );
 
         getContentPane().add(jXMapViewer, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1305, -1));
@@ -395,6 +414,9 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jXMapViewerMouseReleased
 
     private void drawLineButtonActionPerformedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawLineButtonActionPerformedActionPerformed
+        //Limpiando utilidades
+        allRoutingData.clear();
+        listModel.clear();
         PlaceListLugar placeListLugar = new PlaceListLugar();
         PlaceInfoExtractor placeInfoExtractor = new PlaceInfoExtractor();
         // Obtener el nombre del lugar seleccionado en lugaresInicio
@@ -403,6 +425,12 @@ public class Main extends javax.swing.JFrame {
         String lugarFin = lugaresFin.getSelectedItem().toString();
         //Arreglo de Ruta
         List<String> rutaLugares = placeListLugar.getRoutes(lugarInicio, lugarFin);
+            // Llena el modelo de lista con los lugares
+            for (String lugar : rutaLugares) {
+                listModel.addElement(lugar);
+            }
+            // Asigna el modelo de lista del componente visual (en este caso, rutaList)
+            rutaList.setModel(listModel);
         List<GeoPosition> coordinatesList = new ArrayList<>();
         System.out.println("Ruta:");
         for (int i = 0; i < rutaLugares.size(); i++) {
@@ -487,6 +515,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private data.JXMapViewerCustom jXMapViewer;
@@ -494,5 +523,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> lugaresInicio;
     private javax.swing.JMenuItem menuEnd;
     private javax.swing.JMenuItem menuStart;
+    private javax.swing.JList<String> rutaList;
     // End of variables declaration//GEN-END:variables
 }
